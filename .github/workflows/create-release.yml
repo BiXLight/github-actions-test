@@ -1,0 +1,24 @@
+on:
+  pull_request:
+    types: [closed]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')}}
+    steps:
+      - id: get-id
+        run: |
+          id=$(echo ${{github.event.pull_request.title}} | cut -d ';' -f1)
+          echo "id=$id" >> $GITHUB_OUTPUT
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get-id.outputs.id }}
+          release_name: Release ${{ steps.get-id.outputs.id }}
+          draft: false
+          prerelease: false
