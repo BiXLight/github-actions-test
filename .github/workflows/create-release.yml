@@ -10,15 +10,12 @@ jobs:
         run: |
           id=$(echo ${{github.event.pull_request.title}} | cut -d ';' -f1)
           echo "id=$id" >> $GITHUB_OUTPUT
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get-id.outputs.id }}
-          release_name: Release ${{ steps.get-id.outputs.id }}
-          draft: false
-          prerelease: false
+          tag: ${{ steps.get-id.outputs.id }}
+        run: |
+          gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --generate-notes
