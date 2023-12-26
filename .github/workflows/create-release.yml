@@ -13,9 +13,8 @@ jobs:
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ steps.get-id.outputs.id }}
         run: |
-          gh release create "$tag" \
+          gh release create "${{ steps.get-id.outputs.id }}" \
               --repo="$GITHUB_REPOSITORY" \
-              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --title="${GITHUB_REPOSITORY#*/} ${{ steps.get-id.outputs.id }}" \
               --generate-notes
